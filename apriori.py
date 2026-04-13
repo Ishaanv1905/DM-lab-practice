@@ -89,3 +89,26 @@ for i, level in enumerate(l):
     print(f"L{i+1}:")
     for item in level:
         print(set(item), "->", support_data[item])
+
+
+def generate_rules(l, support_data):
+    rules = []
+
+    for level in l[1:]:  # skip L1
+        for itemset in level:
+            for i in range(1, len(itemset)):
+                for left in combinations(itemset, i):
+                    left = frozenset(left)
+                    right = itemset - left
+
+                    conf = support_data[itemset] / support_data[left]
+
+                    if conf >= min_confidence:
+                        rules.append((left, right, conf))
+
+    return rules
+
+print("\nAssociation Rules:")
+rules = generate_rules(l, support_data)
+for left, right, conf in rules:
+    print(set(left), "->", set(right), "Confidence:", round(conf, 2))
